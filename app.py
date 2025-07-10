@@ -17,19 +17,16 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(os.path.join('static', 'images'), exist_ok=True)
 
-# <<< ENRIQUECIMENTO: Informações para o cabeçalho >>>
 @app.before_request
 def before_request():
     g.professor = "Alysson Gabriel"
     g.disciplina = "Linguagem de Programação Avançada"
-    # Adicionamos o ano atual diretamente aqui
     g.current_year = datetime.now().year
 
-# Como não estamos salvando o modelo, vamos treiná-lo toda vez.
-# Em uma aplicação real, você treinaria offline e carregaria o .joblib.
+# modelo nao é salvo, entao é treinado toda vez
 def get_trained_model(df):
     model = LinearRegression()
-    # <<< ENRIQUECIMENTO DE BACKEND: Usando Mês como feature! >>>
+
     features = ['IndiceTempo', 'Mês']
     target = 'Vendas'
     
@@ -40,7 +37,7 @@ def get_trained_model(df):
     return model
 
 
-# <<< MUDANÇA: Importando LinearRegression para treinar a cada requisição >>>
+# LInearRegression pra treinar cada requisicao
 from sklearn.linear_model import LinearRegression
 
 def processar_dados_e_gerar_grafico(filepath):
@@ -48,14 +45,14 @@ def processar_dados_e_gerar_grafico(filepath):
     df['Data'] = pd.to_datetime(df['Data'])
     df.sort_values('Data', inplace=True) # Garante que os dados estão em ordem
     
-    # <<< ENRIQUECIMENTO DE BACKEND: Criando features de tempo >>>
+    # features de tempo
     df['IndiceTempo'] = (df['Data'] - df['Data'].min()).dt.days
     df['Mês'] = df['Data'].dt.month # Feature nova para sazonalidade
     
-    # Treina o modelo com os dados do usuário
+    # Treinar o modelo com os dados do usuário
     model = get_trained_model(df.copy())
     
-    # <<< ENRIQUECIMENTO DE BACKEND: Previsão usando as novas features >>>
+    # previsao usando as novas features
     features = ['IndiceTempo', 'Mês']
     X_hist = df[features]
     df['Previsao'] = model.predict(X_hist)
@@ -71,7 +68,6 @@ def processar_dados_e_gerar_grafico(filepath):
     
     df_future['Previsao'] = model.predict(df_future[features])
     
-    # Ajustes no Gráfico para ficar mais bonito
     plt.style.use('seaborn-v0_8-darkgrid')
     fig, ax = plt.subplots(figsize=(12, 6))
     fig.patch.set_facecolor('#212529')
@@ -128,8 +124,6 @@ def prever():
 
     return "Erro inesperado", 500
 
-# A rota /gerar-pdf continua funcionando, mas não vou repeti-la aqui por brevidade.
-# Apenas certifique-se de que ela também passe 'professor' e 'disciplina' para o template do PDF se quiser o cabeçalho lá também.
 @app.route('/gerar-pdf')
 def gerar_pdf():
     filename = request.args.get('arquivo')
@@ -147,7 +141,6 @@ def gerar_pdf():
         tabela_futuro=df_future.to_dict(orient='records'),
         grafico_uri=grafico_uri,
         data_geracao=datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-        # Você pode adicionar professor=g.professor, disciplina=g.disciplina aqui também
     )
     
     pdf = HTML(string=html_renderizado).write_pdf()
