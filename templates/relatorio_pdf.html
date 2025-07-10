@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Previsão de Vendas</title>
+    <style>
+        /* Estilos otimizados para impressão/PDF */
+        body { font-family: 'Helvetica', sans-serif; font-size: 10pt; }
+        h1, h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        h1 { font-size: 24pt; text-align: center; margin-bottom: 40px; }
+        h2 { font-size: 16pt; margin-top: 30px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #bdc3c7; padding: 8px; text-align: left; }
+        th { background-color: #ecf0f1; font-size: 11pt; }
+        .grafico { margin-top: 30px; text-align: center; page-break-before: always; }
+        img { max-width: 95%; height: auto; }
+        .footer { text-align: center; font-size: 8pt; color: #7f8c8d; position: fixed; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="footer">
+        Relatório gerado em {{ data_geracao }} pela Ferramenta de Previsão de Vendas.
+    </div>
+
+    <h1>Relatório de Previsão de Vendas</h1>
+
+    <h2>Dados Históricos e Linha de Tendência</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Vendas Reais</th>
+                <th>Vendas Previstas (Tendência)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in tabela_historico %}
+            <tr>
+                <td>{{ row.Data.strftime('%Y-%m-%d') }}</td>
+                <td>{{ "R$ {:,.2f}".format(row.Vendas) }}</td>
+                <td>{{ "R$ {:,.2f}".format(row.Previsao) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Previsão para os Próximos 6 Meses</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Vendas Previstas</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in tabela_futuro %}
+            <tr>
+                <td>{{ row.Data.strftime('%Y-%m-%d') }}</td>
+                <td>{{ "R$ {:,.2f}".format(row.Previsao) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="grafico">
+        <h2>Gráfico de Previsão</h2>
+        <img src="{{ grafico_uri }}">
+    </div>
+</body>
+</html>

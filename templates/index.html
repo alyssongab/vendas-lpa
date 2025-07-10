@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Início - Previsão de Vendas{% endblock %}
+
+{% block content %}
+<div class="card bg-dark text-light shadow-sm">
+    <div class="card-body">
+        <h1 class="card-title mb-3">Ferramenta de Previsão de Vendas</h1>
+        <p class="card-text text-light-50">Faça o upload de um arquivo CSV com as colunas "Data" (formato AAAA-MM-DD) e "Vendas".</p>
+        
+        <form action="/prever" method="post" enctype="multipart/form-data" class="mt-4">
+            <div class="mb-3">
+                <label for="file" class="form-label">Selecione o arquivo CSV:</label>
+                <input class="form-control" type="file" name="file" id="file" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-2">
+                Gerar Previsão 🚀
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

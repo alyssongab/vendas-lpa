@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Resultado - Previsão de Vendas{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Resultado da Análise</h1>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card bg-dark text-light shadow-sm mb-4">
+            <div class="card-header">
+                <h5>Dados Históricos e Tendência</h5>
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-dark table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Vendas Reais</th>
+                            <th>Previstas (Tendência)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in tabela_historico %}
+                        <tr>
+                            <td>{{ row.Data.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ "R$ {:,.2f}".format(row.Vendas) }}</td>
+                            <td>{{ "R$ {:,.2f}".format(row.Previsao) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card bg-dark text-light shadow-sm">
+            <div class="card-header">
+                <h5>Previsão para os Próximos 6 Meses</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-dark table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Vendas Previstas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in tabela_futuro %}
+                        <tr>
+                            <td>{{ row.Data.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ "R$ {:,.2f}".format(row.Previsao) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card bg-dark text-light shadow-sm">
+            <div class="card-header">
+                <h5>Gráfico de Previsão</h5>
+            </div>
+            <div class="card-body text-center">
+                <img src="{{ url_for('static', filename=grafico_url) }}?v={{ timestamp }}" class="img-fluid rounded" alt="Gráfico de Previsão de Vendas">
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-4 text-light-50">
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    <a href="/" class="btn btn-secondary">Fazer outra previsão</a>
+    <a href="{{ url_for('gerar_pdf', arquivo=nome_arquivo) }}" class="btn btn-success">
+        Gerar Relatório em PDF
+    </a>
+</div>
+{% endblock %}
